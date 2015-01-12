@@ -1,6 +1,8 @@
 #ifndef __AFFICHAGE_H__
 #define __AFFICHAGE_H__
 
+#include "pion.h"
+
 	extern int Plateau[17][25];
 	extern char Plateau_graph[34][50];
 	extern int masque[17][25];

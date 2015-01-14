@@ -190,9 +190,6 @@ void jouer (int i, int k, pion arri){
 
     //  On met à 1 l'ancienne position.
     Plateau[Groupe[i].pos_pions[k].y][Groupe[i].pos_pions[k].x] = 1;
-
-
-    printf("{%i, %i}\n", Groupe[i].pos_pions[k].x, Groupe[i].pos_pions[k].y );
     
     Plateau_graph[2*Groupe[i].pos_pions[k].y][2*Groupe[i].pos_pions[k].x] = 'O';
     Plateau_graph[2*arri.y][2*arri.x] = Groupe[i].couleur;

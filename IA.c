@@ -3,7 +3,6 @@
 #include <windows.h>
 #include <math.h>
 #include "affichage.h"
-#include "pion.h"
 int okok =0;
 int abs (int a);
 int Min( int a, int b);
@@ -21,11 +20,16 @@ int abs (int a){
 int Distance(int nb_couleurs, int *indice){
 
 	int i, j, pions_J1 = 0, pions_J2 =0;
+	int dist_sommets;
+
 
 	for (i=0; i<nb_couleurs; i++){
+		dist_sommets= sqrt( pow(Groupe[indice[i]].sommet.x-Groupe[5-indice[i]].sommet.x,2)+pow(Groupe[indice[i]].sommet.y-Groupe[5-indice[i]].sommet.y,2) );
+
 		for (j=0; j<=9; j++){
-			pions_J1 = pions_J1 + sqrt(pow(Groupe[indice[i]].pos_pions[j].x-Groupe[indice[i]].sommet.x,2)+pow(Groupe[indice[i]].pos_pions[j].y-Groupe[indice[i]].sommet.y,2));
-			pions_J2 = pions_J2 + sqrt(pow(Groupe[5-indice[i]].pos_pions[j].x-Groupe[5-indice[i]].sommet.x,2)+pow(Groupe[5-indice[i]].pos_pions[j].y-Groupe[5-indice[i]].sommet.y,2));
+			
+			pions_J1 = pions_J1 + dist_sommets -sqrt(pow(Groupe[indice[i]].pos_pions[j].x-Groupe[indice[i]].sommet.x,2)+pow(Groupe[indice[i]].pos_pions[j].y-Groupe[indice[i]].sommet.y,2));
+			pions_J2 = pions_J2 + dist_sommets -sqrt(pow(Groupe[5-indice[i]].pos_pions[j].x-Groupe[5-indice[i]].sommet.x,2)+pow(Groupe[5-indice[i]].pos_pions[j].y-Groupe[5-indice[i]].sommet.y,2));
 		}
 	}
 
@@ -119,9 +123,9 @@ void IA_jouer ( int profondeur, int *indices_groupes, int nb_groupe){
 			
 		}
 	}
-	printf ("Couleur joue : %i\n", indice_couleur);
-	printf ( "Pion joue  : %i\n", indice_pion+1);
-	printf( " Position joue : [%i ,%i ] \n", meilleur_coup.x, meilleur_coup.y );
+	//printf ("Couleur joue : %i\n", indice_couleur);
+	//printf ( "Pion joue  : %i\n", indice_pion+1);
+	//printf( " Position joue : [%i ,%i ] \n", meilleur_coup.x, meilleur_coup.y );
 	jouer (indice_couleur, indice_pion,meilleur_coup);
 }
 
@@ -130,7 +134,6 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 
 	int i, j, k, cpt = 0;
 	int min_max;
-	int *indices_groupes2;
 	pion pos_avant;
 	pion coup[6];
 	
@@ -191,15 +194,15 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 						min_max = Min( min_max, alphabeta (profondeur, p-1, alpha, beta, indices_groupes, nb_groupe) );
 
 												/* On déjoue le coup, c'est comme si on jouait le coup inverse.*/
-						if ((okok ==16)){   
-							printf ("pion %i, couleur : %i \n", j, i);
-						for (k=0; k < cpt; k++){
-							printf (" coup[%i] : {%i, %i } \n", k, coup[k].x, coup[k].y);
-						}   
- 						affiche(nb_groupe, h, wOldColorAttrs);
+						//if ((okok ==16)){   
+						//	printf ("pion %i, couleur : %i \n", j, i);
+						//for (k=0; k < cpt; k++){
+						//	printf (" coup[%i] : {%i, %i } \n", k, coup[k].x, coup[k].y);
+						//}   
+ 						//affiche(nb_groupe, h, wOldColorAttrs);
 
-						}
-						okok++;
+						//}
+						//okok++;
 						jouer (5-indices_groupes[i], j,pos_avant);
 
 

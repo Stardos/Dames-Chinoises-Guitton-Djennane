@@ -156,7 +156,7 @@ int main() {
         //    printf("\n");
 
         //}
-        //system("cls");
+        system("cls");
          // Affichage du Plateau
    
         affiche(n, h, wOldColorAttrs);

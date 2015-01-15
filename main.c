@@ -89,10 +89,8 @@ int main() {
     init_groupes(n);
 
     //  Initialisation des pions.
-    for(i=0; i<= n-1; i++){
-        plateau_en_cours(Groupe[i]);
-        plateau_en_cours(Groupe[5-i]);
-    }
+    init_pion_plateau(n);
+   
 
 
     

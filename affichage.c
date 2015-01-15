@@ -235,7 +235,7 @@ void plateau_en_cours(Groupe_pions nom){
                         //     Place toutes les  couleurs     //
                         //          pour l'affichage          //
                         ////////////////////////////////////////
-init_pion_plateau(int n){
+void init_pion_plateau(int n){
     for(i=0; i<= n-1; i++){
         plateau_en_cours(Groupe[i]);
         plateau_en_cours(Groupe[5-i]);

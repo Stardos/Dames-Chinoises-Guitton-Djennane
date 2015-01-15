@@ -13,6 +13,7 @@
 	void initialisation_plateau ();
 	void create_affich();
 	void plateau_en_cours(Groupe_pions nom);
+	void init_pion_plateau(int n)
 	void affiche(int n, HANDLE h, WORD wOldColorAttrs);
 	
 #endif

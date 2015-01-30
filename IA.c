@@ -68,14 +68,23 @@ int Max( int a,  int b){
 	}
 }
 
+int choix_coup_a_jouer(int nb_coup_optimaux){
+    return rand()%(nb_coup_optimaux);
+}
+
 void IA_jouer ( int profondeur, int *indices_groupes, int nb_groupe){
-	int i, j, k, cpt=0;
+	int i, j, k, l, cpt=0;
 	int alpha = -5000;
 	int beta = 5000;
 	int min_max;
-	int indice_couleur;
-	int indice_pion;
-	pion meilleur_coup;
+	int nb_coups_optimaux;
+	int random_coup;
+	int* indice_couleur;
+	int* indice_pion;
+	pion* meilleur_coup;
+	int* indice_couleur_tmp;
+	int* indice_pion_tmp;
+	pion* meilleur_coup_tmp;
 	pion coup[6];
 	pion pos_avant;
 
@@ -121,16 +130,63 @@ void IA_jouer ( int profondeur, int *indices_groupes, int nb_groupe){
 					//	On sauve la valeur max.
 					alpha = min_max;
 
-					//	On mémorise de quelle couleur il s'agit.
-					indice_couleur = indices_groupes[i];
+					//	On mémorise de quelle couleur il s'agit dans un tableau.
+                    indice_couleur = (int*)malloc(sizeof(int));
+					indice_couleur[0] = indices_groupes[i];
 
-					//	On sauve quelle est ce pion.
-					indice_pion = j;
+					//	On sauve quelle est ce pion dans un tableau.
+                    indice_pion = (int*)malloc(sizeof(int));
+					indice_pion[0] = j;
 
-					//	On sauve c'est coordonées.
-					meilleur_coup.x =coup[k].x;
-					meilleur_coup.y =coup[k].y;
-				}
+					//	On sauve le meilleur coup dans un tableau
+					meilleur_coup = (pion*)malloc(sizeof(pion));
+					meilleur_coup[0] = coup[k];
+
+					nb_coups_optimaux = 1;
+				}else
+                    if (alpha == min_max) {
+
+                        // On initialise des tableaux temp pour récupérer les données des tableaux
+                        indice_couleur_tmp = (int*)malloc(nb_coups_optimaux*sizeof(int));
+                        indice_pion_tmp = (int*)malloc(nb_coups_optimaux*sizeof(int));
+                        meilleur_coup_tmp = (pion*)malloc(nb_coups_optimaux*sizeof(pion));
+			
+			// On copie les données	
+                        for (l=0; l<=nb_coups_optimaux-1;l++){
+                            indice_couleur_tmp[l]=indice_couleur[l];
+                            indice_pion_tmp[l]=indice_pion[l];
+                            meilleur_coup_tmp[l]=meilleur_coup[l];
+                        }
+			
+			// On libère la mémoire
+                        free(indice_couleur);
+                        free(indice_pion);
+                        free(meilleur_coup);
+
+                        nb_coups_optimaux++;
+
+			//On recrée des talbeaux avec l'ancienne taille + 1
+                        indice_couleur = (int*)malloc(nb_coups_optimaux*sizeof(int));
+                        indice_pion = (int*)malloc(nb_coups_optimaux*sizeof(int));
+                        meilleur_coup = (pion*)malloc(nb_coups_optimaux*sizeof(pion));
+
+			// On recopie les données depuis les tableaux temp
+                        for (l=0; l<=nb_coups_optimaux-2;l++){
+                            indice_couleur[l]=indice_couleur_tmp[l];
+                            indice_pion[l]=indice_pion_tmp[l];
+                            meilleur_coup[l]=meilleur_coup_tmp[l];
+                        }
+
+			// On ajoute la caractérisation du nouveau coup à la fin des talbeaux
+                        indice_couleur[l]=indices_groupes[i];
+                        indice_pion[l]=j;
+                        meilleur_coup[l]=coup[k];
+
+			// On libère la mémoire
+                        free(indice_couleur_tmp);
+                        free(indice_pion_tmp);
+                        free(meilleur_coup_tmp);
+                    }
 
 				// On déjoue le coup, pour ce faire on replace le pion à sa position initiale
 				jouer (indices_groupes[i], j,pos_avant);
@@ -139,10 +195,12 @@ void IA_jouer ( int profondeur, int *indices_groupes, int nb_groupe){
 
 		}
 	}
+	// On choisit un nombre aléatoire entre 0 et nb_coups_optimaux-1
+	random_coup = choix_coup_a_jouer(nb_coups_optimaux);
 	//printf ("Couleur joue : %i\n", indice_couleur);
 	//printf ( "Pion joue  : %i\n", indice_pion+1);
 	//printf( " Position joue : [%i ,%i ] \n", meilleur_coup.x, meilleur_coup.y );
-	jouer (indice_couleur, indice_pion,meilleur_coup);
+	jouer (indice_couleur[random_coup], indice_pion[random_coup],meilleur_coup[random_coup]);
 }
 
 

@@ -3,33 +3,49 @@
 #include <windows.h>
 #include <math.h>
 #include "affichage.h"
-int okok =0;
-int abs (int a);
+
+int dist (pion A, pion B);
 int Min( int a, int b);
 int Max( int a, int b);
 void IA_jouer ( int profondeur, int *indices_groupes, int nb_groupe);
 int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes, int nb_groupe);
 int Distance(int nb_couleurs, int *indice);
 
-int abs (int a){
-	if (a <0){
-		return -a;
-	}
-}     
+int dist ( pion A, pion B){
+
+	if (B.x > A.x + abs ( A.y - B.y))
+		return abs ( A.y - B.y) + ( B.x - abs (A.y - B.y+ A.x)/2);
+    else
+        if ( B.x < A.x - abs (A.y -B.y))
+            return abs ( A.y - B.y) + ( A.x - abs (A.y - B.y+ B.x)/2);
+		else
+            return abs (B.y - A.y);
+}
+
 
 int Distance(int nb_couleurs, int *indice){
 
+	//int okok = 0 ;
+
 	int i, j, pions_J1 = 0, pions_J2 =0;
-	int dist_sommets;
+	int dist_max;
+	int dist_sommetJ1, dist_sommetJ2 ;
 
 
 	for (i=0; i<nb_couleurs; i++){
-		dist_sommets= sqrt( pow(Groupe[indice[i]].sommet.x-Groupe[5-indice[i]].sommet.x,2)+pow(Groupe[indice[i]].sommet.y-Groupe[5-indice[i]].sommet.y,2) );
+
+
+		//	Distance entre deux sommets opposés.
+		dist_max = dist(Groupe[indice[i]].label[0][0],Groupe[indice[i]].label[1][0]) ;
 
 		for (j=0; j<=9; j++){
-			
-			pions_J1 = pions_J1 + dist_sommets -sqrt(pow(Groupe[indice[i]].pos_pions[j].x-Groupe[indice[i]].sommet.x,2)+pow(Groupe[indice[i]].pos_pions[j].y-Groupe[indice[i]].sommet.y,2));
-			pions_J2 = pions_J2 + dist_sommets -sqrt(pow(Groupe[5-indice[i]].pos_pions[j].x-Groupe[5-indice[i]].sommet.x,2)+pow(Groupe[5-indice[i]].pos_pions[j].y-Groupe[5-indice[i]].sommet.y,2));
+
+			dist_sommetJ1 =  dist( Groupe[indice[i]].sommet, Groupe[indice[i]].pos_pions[j] );
+			pions_J1 = pions_J1 + ((100*dist_max)/( 1+ dist_max - dist_sommetJ1))  ;
+
+			dist_sommetJ2 =  dist( Groupe[5-indice[i]].sommet, Groupe[5-indice[i]].pos_pions[j] );
+			pions_J2 = pions_J2 + (100*(dist_max) /( 1+ dist_max - dist_sommetJ2))  ;
+
 		}
 	}
 
@@ -37,7 +53,7 @@ int Distance(int nb_couleurs, int *indice){
 }
 
 int Min( int a, int b){
-	if (a > b){ 
+	if (a > b){
 		return b;
 	}else{
 		return a;
@@ -45,7 +61,7 @@ int Min( int a, int b){
 }
 
 int Max( int a,  int b){
-	if (a > b){ 
+	if (a > b){
 		return a;
 	}else{
 		return b;
@@ -85,15 +101,15 @@ void IA_jouer ( int profondeur, int *indices_groupes, int nb_groupe){
 				coup[cpt].y = Groupe[indices_groupes[i]].coup_possible[j][cpt].y;
 				cpt++;
 			}
-			
-			
+
+
 			//	On continue tant que l'on a pas atteint 5 (le nombre max de coup), et que ce coup ne soit pas {0,0}.
 			for (k=0; k< cpt; k++){
-				
+
 				//	On commence par mémoriser la position du pion avant de le déplacer.
 				pos_avant.x = Groupe[indices_groupes[i]].pos_pions[j].x;
 				pos_avant.y = Groupe[indices_groupes[i]].pos_pions[j].y;
-	
+
 				//	On joue le coup proposé : en paramètre on donne : l'indice du groupe / le numéro du pion / le coup à jouer.
 				jouer (indices_groupes[i], j, coup[k]);
 
@@ -116,11 +132,11 @@ void IA_jouer ( int profondeur, int *indices_groupes, int nb_groupe){
 					meilleur_coup.y =coup[k].y;
 				}
 
-				// On déjoue le coup, pour ce faire on replace le pion à sa position initiale 
+				// On déjoue le coup, pour ce faire on replace le pion à sa position initiale
 				jouer (indices_groupes[i], j,pos_avant);
-				
+
 			}
-			
+
 		}
 	}
 	//printf ("Couleur joue : %i\n", indice_couleur);
@@ -136,7 +152,7 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 	int min_max;
 	pion pos_avant;
 	pion coup[6];
-	
+
 	 HANDLE h = GetStdHandle ( STD_OUTPUT_HANDLE ); //->whats this for? cant it be changed?
      WORD wOldColorAttrs; //->whats this for? cant it be changed?
         CONSOLE_SCREEN_BUFFER_INFO csbiInfo; //->whats this for? cant it be changed?
@@ -149,14 +165,14 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 	}else{
 
 		if ( (profondeur - p)%2 == 1 ){
-			
+
 			min_max = 5000;
 
 			for (i=0; i<= nb_groupe -1; i++){
 
 				for(j = 0; j <= 9; j++){
 
-					
+
 
 					//	On met les coups associé au pion en cours, pour une couleur donnée.
 					coup_possible_pion(5-indices_groupes[i],  j);
@@ -176,10 +192,10 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 						cpt++;
 
 					}
-					
-			
+
+
 					//	On continue tant que l'on a pas atteint 5 (le nombre max de coup), et que ce coup ne soit pas {0,0}.
-			
+
 					for (k=0; k< cpt; k++) {
 
 						/* On stocke la position avant et après du pion*/
@@ -188,17 +204,17 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 						pos_avant.y = Groupe[5-indices_groupes[i]].pos_pions[j].y;
 
 						/* On joue le coup proposé dans la liste */
-						
+
 						jouer (5-indices_groupes[i], j, coup[k]);
 
 						min_max = Min( min_max, alphabeta (profondeur, p-1, alpha, beta, indices_groupes, nb_groupe) );
 
 												/* On déjoue le coup, c'est comme si on jouait le coup inverse.*/
-						//if ((okok ==16)){   
+						//if ((okok ==16)){
 						//	printf ("pion %i, couleur : %i \n", j, i);
 						//for (k=0; k < cpt; k++){
 						//	printf (" coup[%i] : {%i, %i } \n", k, coup[k].x, coup[k].y);
-						//}   
+						//}
  						//affiche(nb_groupe, h, wOldColorAttrs);
 
 						//}
@@ -206,19 +222,19 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 						jouer (5-indices_groupes[i], j,pos_avant);
 
 
-						
+
 
 						if (alpha >= min_max){
 
-							return min_max;	
+							return min_max;
 
 						}
 
 						beta = Min (beta, min_max);
 
-						
-						
-						
+
+
+
 					}
 				}
 			}
@@ -230,7 +246,7 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 			for (i=0; i<= nb_groupe -1; i++){
 				for(j = 0; j <= 9; j++){
 
-					
+
 					//	On met les coups associé au pion en cours, pour une couleur donnée.
 					coup_possible_pion(indices_groupes[i],  j);
 
@@ -245,8 +261,8 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 						coup[cpt].y = Groupe[indices_groupes[i]].coup_possible[j][cpt].y;
 						cpt++;
 					}
-					
-					
+
+
 					//	On continue tant que l'on a pas atteint 5 (le nombre max de coup), et que ce coup ne soit pas {0,0}.
 					for (k=0; k< cpt; k++) {
 						/* On stocke la position avant et après du pion*/
@@ -260,16 +276,16 @@ int alphabeta( int profondeur, int p, int alpha, int beta, int *indices_groupes,
 						/* On déjoue le coup, c'est comme si on jouait le coup inverse.*/
 						jouer (indices_groupes[i], j,pos_avant);
 						if (beta <= min_max){
-							return min_max;	
+							return min_max;
 						}
 
 						alpha = Max (alpha, min_max);
 
-						
-						
+
+
 					}
 				}
-			}			
+			}
 		}
 		return min_max;
 	}

@@ -236,6 +236,7 @@ void plateau_en_cours(Groupe_pions nom){
                         //          pour l'affichage          //
                         ////////////////////////////////////////
 void init_pion_plateau(int n){
+    int i;
     for(i=0; i<= n-1; i++){
         plateau_en_cours(Groupe[i]);
         plateau_en_cours(Groupe[5-i]);
